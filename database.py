@@ -7,22 +7,22 @@ DEFAULT_FILE_PATH = "./database.db"
 db_file_path = DEFAULT_FILE_PATH
 
 INITIAL_STATEMENTS = [
-    """CREATE TABLE IF NOT EXISTS posts (
-            id INTEGER PRIMARY KEY, 
-            name text NOT NULL, 
-            begin_date DATE, 
-            end_date DATE
+    """CREATE TABLE IF NOT EXISTS users (
+            uuid TEXT PRIMARY KEY, 
+            name TEXT NOT NULL
         );""",
 
-    """CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY, 
-            name TEXT NOT NULL, 
-            priority INT, 
-            project_id INT NOT NULL, 
-            status_id INT NOT NULL, 
-            begin_date DATE NOT NULL, 
-            end_date DATE NOT NULL, 
-            FOREIGN KEY (project_id) REFERENCES projects (id)
+    """CREATE TABLE IF NOT EXISTS posts (
+            uuid TEXT PRIMARY KEY, 
+            content TEXT NOT NULL, 
+            owner TEXT NOT NULL
+        );""",
+
+    """CREATE TABLE IF NOT EXISTS comments (
+            uuid TEXT PRIMARY KEY, 
+            content TEXT NOT NULL,
+            owner TEXT NOT NULL, 
+            post TEXT NOT NULL
         );"""
 ]
 
