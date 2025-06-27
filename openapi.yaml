@@ -163,37 +163,6 @@ paths:
           description: Unauthorized
         '404':
           description: Not Found
-  /post/{post_uuid}/comments/{comment_uuid}:
-    get:
-      tags:
-      - post
-      - comment
-      parameters:
-      - name: post_uuid
-        in: path
-        description: The UUID of the related post
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: comment_uuid
-        in: path
-        description: The UUID of the comment to fetch
-        required: true
-        schema:
-          type: string
-          format: uuid
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Comment"
-        '401':
-          description: Unauthorized
-        '404':
-          description: Not Found
   /post/{uuid}/comments:
     post:
       operationId: api.comment.comment
@@ -251,6 +220,48 @@ paths:
           description: Unauthorized
         '404':
           description: Not Found
+  /comment/{uuid}/upvote:
+    put:
+      tags:
+      - comment
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the comment to upvote
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '409':
+          $ref: "#/components/responses/votingConflict"
+  /comment/{uuid}/downvote:
+    put:
+      tags:
+      - comment
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the comment to downvote
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '409':
+          $ref: "#/components/responses/votingConflict"
   /auth/signup:
     put:
       operationId: api.auth.signup
@@ -342,5 +353,15 @@ components:
           format: uuid
         user:
           $ref: "#/components/schemas/User"
+  responses:
+    votingConflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            type: string
+            enum:
+            - ownComment
+            - alreadyVoted
 security:
 - basicAuth: []
