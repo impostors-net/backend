@@ -1,8 +1,8 @@
 import database
-import user
+import objects
 import server
 
-users: list[user.User] = []
+users: list[objects.User] = []
 
 def main():
     global users
@@ -10,7 +10,7 @@ def main():
     connection = database.start()
     database.main(connection)
 
-    users = user.from_database(connection)
+    users = objects.users_from_database(connection)
 
     connection.close()
 

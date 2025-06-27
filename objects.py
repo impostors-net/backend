@@ -2,9 +2,6 @@ import uuid
 
 import sqlite3
 
-import main
-import post
-
 class User:
     def __init__(self, user_uuid: uuid.UUID, user_name: str, password_hash: str):
         self.uuid = user_uuid
@@ -17,7 +14,7 @@ class User:
     def get_password_hash(self):
         return self.password_hash
 
-    def get_assigned_posts(self, posts: dict[uuid.UUID, post.Post]) -> dict[uuid.UUID, post.Post]:
+    def get_assigned_posts(self, posts) -> dict:
 
         assigned_posts = {}
 
@@ -27,10 +24,26 @@ class User:
 
         return assigned_posts
 
+    def __str__(self):
+        return self.name
+
+class Post:
+    def __init__(self, post_uuid: uuid.UUID, content: str, owner: User):
+        self.post_uuid = post_uuid
+        self.content = content
+        self.owner = owner
+
+    def get_owner(self):
+        return self.owner
+
+    def get_content(self):
+        return self.content
+
+    def __str__(self):
+        return self.content
 
 
-
-def from_database(connection: sqlite3.Connection) -> dict[uuid.UUID, User]:
+def users_from_database(connection: sqlite3.Connection) -> dict[uuid.UUID, User]:
     pass
 
 
