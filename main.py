@@ -1,11 +1,14 @@
+import uuid
+
 import database
 import objects
 import server
 
-users: list[objects.User] = []
+users: dict[uuid.UUID, objects.User] = {}
+posts: dict[uuid.UUID, objects.Post] = {}
 
 def main():
-    global users
+    global users, posts
 
     connection = database.start()
     database.main(connection)

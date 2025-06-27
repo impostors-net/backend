@@ -38,11 +38,12 @@ class User:
         return self.name
 
 class Post:
-    def __init__(self, post_uuid: uuid.UUID, content: str, owner: User, comments: dict):
+    def __init__(self, post_uuid: uuid.UUID, content: str, owner: User, comments: dict, roles: dict[User, bool]):
         self.post_uuid = post_uuid
         self.content = content
         self.owner = owner
         self.comments = comments
+        self.roles: dict[User, bool] = roles
 
     def get_owner(self):
         return self.owner
@@ -56,6 +57,12 @@ class Post:
     def add_comment(self, content: str, writer: User):
         comment_uuid = uuid.uuid4()
         self.comments[comment_uuid] = Comment(comment_uuid, content, writer, self)
+
+    def get_roles(self):
+        return self.roles
+
+    def assign_role(self, user: User, role: bool):
+        self.roles[user] = role
 
     def __str__(self):
         return self.content
@@ -81,7 +88,17 @@ class Comment:
 
 
 def users_from_database(connection: sqlite3.Connection) -> dict[uuid.UUID, User]:
-    pass
+    users: dict[uuid.UUID, User] = {}
+
+    cur = connection.cursor()
+    cur.execute('SELECT uuid, name, password_hash FROM users')
+    rows = cur.fetchall()
+    for row in rows:
+        users[row[0]] = User(row[0], row[1], row[2])
+
+
+    return users
+
 
 
 
