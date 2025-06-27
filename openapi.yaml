@@ -14,11 +14,11 @@ tags:
   - name: user
     description: Get information about users.
   - name: post
-    description: Get posts from the network.
+    description: Get and create posts.
   - name: comment
-    description: Get information about comments.
-  - name: auth 
-    description: Authenticate with the API
+    description: Get information about and create comments.
+  - name: auth
+    description: Manage users
 paths:
   /post/next:
     get:
@@ -77,21 +77,23 @@ paths:
     post:
       tags:
       - post
+      requestBody:
+        description: The post content
+        content:
+          text/markdown:
+            schema:
+              type: string
+              format: markdown
+          text/plain:
+            schema:
+              type: string
       responses:
-        '201':
+        '200':
           description: Created
           content:
-            text/plain:
-              schema:
-                type: string
-                format: uuid
             application/json:
               schema:
-                type: object
-                properties:
-                  uuid:
-                    type: string
-                    format: uuid
+                $ref: "#/components/schemas/Post"
         '401':
           description: Unauthorized
   /user/{uuid}:
@@ -195,26 +197,28 @@ paths:
       parameters:
       - name: uuid
         in: path
-        description: The handle of the user to fetch
+        description: The UUID of the post to attach the comment to
         required: true
         schema:
           type: string
           format: uuid
+      requestBody:
+        description: The comment content
+        content:
+          text/markdown:
+            schema:
+              type: string
+              format: markdown
+          text/plain:
+            schema:
+              type: string
       responses:
-        '201':
+        '200':
             description: Created
             content:
-              text/plain:
-                schema:
-                  type: string
-                  format: uuid
               application/json:
                 schema:
-                  type: object
-                  properties:
-                    uuid:
-                      type: string
-                      format: uuid
+                  $ref: "#/components/schemas/Comment"
         '401':
           description: Unauthorized
   /comment/{uuid}:
@@ -240,7 +244,45 @@ paths:
           description: Unauthorized
         '404':
           description: Not Found
+  /auth/signup:
+    put:
+      tags:
+      - auth
+      security: []
+      parameters:
+      - name: displayName
+        in: header
+        description: The display name of the user to create
+        required: true
+        schema:
+          type: string
+      - name: handle
+        in: header
+        description: The unique handle of the new user
+        required: true
+        schema:
+          type: string
+      - name: passwordHash
+        in: header
+        description: The SHA256 password hash of the user to create
+        required: true
+        schema:
+          type: string
+          format: sha256
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '409':
+          description: "Conflict: A user with the specified handle already exists"
 components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
   schemas:
     Post:
       type: object
@@ -287,5 +329,10 @@ components:
         content:
           type: string
           format: markdown
+        post:
+          type: string
+          format: uuid
         user:
           $ref: "#/components/schemas/User"
+security:
+- basicAuth: []
