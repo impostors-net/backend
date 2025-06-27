@@ -1,0 +1,291 @@
+openapi: 3.0.4
+info:
+  title: impostors.space Backend Interface
+  description: >-
+    This API allows impostors.space and other applications to communicate with
+    the impostors.net backend server
+  termsOfService: https://impostors.space/terms
+  contact:
+    email: api@impostors.space
+  version: 0.0.1
+servers:
+  - url: https://impostors.space/api/v1
+tags:
+  - name: user
+    description: Get information about users.
+  - name: post
+    description: Get posts from the network.
+  - name: comment
+    description: Get information about comments.
+  - name: auth 
+    description: Authenticate with the API
+paths:
+  /post/next:
+    get:
+      tags:
+      - post
+      responses:
+        '401':
+          description: Unauthorized
+        '302':
+          description: Redirect
+          headers:
+            Location:
+              description: The location to redirect to. If your HTTP client does not support redirects, construct this URI using the response body.
+              example: https://impostors.space/post/3fa85f64-5717-4562-b3fc-2c963f66afa6
+              schema:
+                type: string
+                format: uri
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: uuid
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    format: uuid
+    summary: Get the next post from your feed
+    
+  /post/{uuid}:
+    get:
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the post to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - post
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+  /post:
+    post:
+      tags:
+      - post
+      responses:
+        '201':
+          description: Created
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: uuid
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    format: uuid
+        '401':
+          description: Unauthorized
+  /user/{uuid}:
+    get:
+      tags:
+      - user
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the user to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/User"
+                  posts:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+  /user/{handle}:
+    get:
+      tags:
+      - user
+      parameters:
+      - name: handle
+        in: path
+        description: The handle of the user to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/User"
+                  posts:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+  /post/{post_uuid}/comments/{comment_uuid}:
+    get:
+      tags:
+      - post
+      - comment
+      parameters:
+      - name: post_uuid
+        in: path
+        description: The UUID of the related post
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: comment_uuid
+        in: path
+        description: The UUID of the comment to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+  /post/{uuid}/comments:
+    post:
+      tags:
+      - post
+      - comment
+      parameters:
+      - name: uuid
+        in: path
+        description: The handle of the user to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '201':
+            description: Created
+            content:
+              text/plain:
+                schema:
+                  type: string
+                  format: uuid
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    uuid:
+                      type: string
+                      format: uuid
+        '401':
+          description: Unauthorized
+  /comment/{uuid}:
+    get:
+      tags:
+      - comment
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the comment to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+components:
+  schemas:
+    Post:
+      type: object
+      properties:
+        responseType:
+          type: string
+          enum:
+          - impostor
+          - innocent
+        uuid:
+          type: string
+          format: uuid
+        content:
+          type: string
+          format: markdown
+          nullable: true
+          example: null
+        user:
+          $ref: "#/components/schemas/User"
+        comments:
+          type: array
+          nullable: true
+          items:
+            type: string
+            format: uuid
+    User:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+          example: "Red Crewmate"
+        handle:
+          type: string
+          example: "rednotsus"
+    Comment:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        content:
+          type: string
+          format: markdown
+        user:
+          $ref: "#/components/schemas/User"
