@@ -9,7 +9,8 @@ db_file_path = DEFAULT_FILE_PATH
 INITIAL_STATEMENTS = [
     """CREATE TABLE IF NOT EXISTS users (
             uuid TEXT PRIMARY KEY, 
-            name TEXT NOT NULL
+            name TEXT NOT NULL,
+            password_hash TEXT NOT NULL
         );""",
 
     """CREATE TABLE IF NOT EXISTS posts (
