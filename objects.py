@@ -54,8 +54,7 @@ class Post:
     def get_comments(self):
         return self.comments
 
-    def add_comment(self, content: str, writer: User, votes: dict[User, int]):
-        comment_uuid = uuid.uuid4()
+    def add_comment(self, comment_uuid: uuid.UUID, content: str, writer: User, votes: dict[User, int]):
         self.comments[comment_uuid] = Comment(comment_uuid, content, votes, writer, self)
 
     def get_roles(self):

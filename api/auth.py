@@ -1,12 +1,20 @@
-import test
+import main
+
+
+def initialize():
+    main.initialize()
 
 
 def signup():
     pass
 
 def basic_auth(username: str, password: str):
+    initialize()
     print(username, password)
-    for user in test.user_list:
+
+    print(main.get_users())
+
+    for user in main.get_users().values():
         if user.get_name() == username and user.get_password_hash() == password:
             return {"sub": username}
 
