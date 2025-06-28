@@ -355,7 +355,7 @@ class Comment:
             "createdAt": self.created_at,
             "score": sum(vote.value for vote in self.get_votes().values()),
             "isImpostor": self.is_impostor(self.author),
-            #TODO: Get user vote
+            "yourVote": self.get_votes().get(self.author.id, Vote.NONE).value
         }
 
     def __init__(self, content: str, post: Post, author: User):
