@@ -14,7 +14,7 @@ class Vote(Enum):
     DOWNVOTE = -1
 
 class DatabaseManager:
-    def __init__(self, db_path: str = "data.db"):
+    def __init__(self, db_path: str = "data.sqlite"):
         self.db_path = db_path
         self.init_db()
     

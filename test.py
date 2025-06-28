@@ -3,8 +3,8 @@ import uuid
 from database import *
 from os import remove, path
 
-if path.exists("test.db"):
-    remove("test.db")
+if path.exists("test.sqlite"):
+    remove("test.sqlite")
 
 manager = DatabaseManager("test.db")
 
