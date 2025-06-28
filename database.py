@@ -10,6 +10,11 @@ class UserRole(Enum):
     IMPOSTOR = True
     INNOCENT = False
 
+class ResponseType(Enum):
+    IMPOSTOR = "impostor"
+    INNOCENT = "innocent"
+    AUTHOR = "author"
+
 
 class Vote(Enum):
     UPVOTE = 1
@@ -196,17 +201,14 @@ class User:
 class Post:
     def get_api_representation(self, user: User) -> Dict[str, str]:
 
-        if user.id == self.author.id:
-            response_type = "author"
-        else:
-            response_type = self.get_response_type(user)
+        response_type = self.get_response_type(user)
 
         response = {
             "uuid": self.id,
-            "content": self.content,
+            "content": "You are the impostor!" if response_type == ResponseType.IMPOSTOR else self.content,
             "author": self.author.get_api_representation(),
             "createdAt": self.created_at,
-            "response_type": response_type,
+            "response_type": response_type.value,
             "comments": [comment.id for comment in self.get_comments()],
             "competitionFinished": self.competition_finished(),
         }
@@ -220,7 +222,10 @@ class Post:
         self.db_manager = author.db_manager
         self._save()
 
-    def get_response_type(self, user: User) -> str:
+    def get_response_type(self, user: User) -> ResponseType:
+        if user.id == self.author.id:
+            return ResponseType.AUTHOR
+
         existing_roles = self.get_user_roles()
 
         if user.id in existing_roles:
@@ -232,9 +237,9 @@ class Post:
             self.set_user_role(user, role)
 
         if is_impostor:
-            role_string = "impostor"
+            role_string = ResponseType.IMPOSTOR
         else:
-            role_string = "innocent"
+            role_string = ResponseType.INNOCENT
         return role_string
     
     def _save(self):
