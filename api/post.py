@@ -1,7 +1,7 @@
 from database import DatabaseManager, User, Post
 
 
-def next_post():
+def random():
     manager = DatabaseManager()
     post = Post.get_random(manager)
     if not post:

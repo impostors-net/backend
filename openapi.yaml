@@ -21,7 +21,7 @@ tags:
   - name: auth
     description: Manage users
 paths:
-  /post/next:
+  /post/random:
     options:
       operationId: api.cors.post_next_options
       security: []
@@ -39,7 +39,7 @@ paths:
               schema:
                 type: string
     get:
-      operationId: api.post.next_post
+      operationId: api.post.random
       tags:
       - post
       responses:
