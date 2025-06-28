@@ -98,6 +98,14 @@ paths:
                     format: uuid
         '404':
           description: "Not Found: No posts available"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No posts available"
         '500':
           description: Internal Server Error
     summary: Get the next post from your feed
@@ -150,6 +158,14 @@ paths:
           description: Unauthorized
         '404':
           description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Post not found"
         '500':
           description: Internal Server Error
     delete:
@@ -170,9 +186,25 @@ paths:
         '401':
           description: Unauthorized
         '403':
-          description: Forbidden
+          description: "Forbidden: You are not the author of this post"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "You are not the author of this post"
         '404':
           description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Post not found"
         '500':
           description: Internal Server Error
   /post:
@@ -192,8 +224,6 @@ paths:
             Access-Control-Allow-Headers:
               schema:
                 type: string
-        '400':
-          description: Bad Request (check request body)
         '401':
           description: Unauthorized
         '500':
@@ -220,6 +250,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Post"
+        '400':
+          description: Bad Request (check request body)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Request body cannot be empty!"
         '401':
           description: Unauthorized
         '500':
@@ -267,19 +307,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/User"
-                  posts:
-                    type: array
-                    items:
-                      type: string
-                      format: uuid
+                $ref: "#/components/schemas/User"
         '401':
           description: Unauthorized
         '404':
           description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "The specified user does not exist"
         '500':
           description: Internal Server Error
   /user/@{handle}:
@@ -323,19 +363,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/User"
-                  posts:
-                    type: array
-                    items:
-                      type: string
-                      format: uuid
+                $ref: "#/components/schemas/User"
         '401':
           description: Unauthorized
         '404':
           description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "The specified user does not exist"
         '500':
           description: Internal Server Error
   /post/{uuid}/comment:
@@ -393,6 +433,16 @@ paths:
               application/json:
                 schema:
                   $ref: "#/components/schemas/Comment"
+        '400':
+          description: Bad Request (check request body)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Request body cannot be empty!"
         '401':
           description: Unauthorized
         '500':
@@ -445,6 +495,14 @@ paths:
           description: Unauthorized
         '404':
           description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Comment not found"
         '500':
           description: Internal Server Error
     delete:
@@ -462,12 +520,36 @@ paths:
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Comment deleted successfully"
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "You are not the author of this comment"
         '404':
           description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Comment not found"
         '500':
           description: Internal Server Error
   /comment/{uuid}/vote:
@@ -525,10 +607,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Comment"
+        '400':
+          description: Bad Request (check request body)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Request body cannot be empty!"
         '401':
           description: Unauthorized
         '404':
           description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Comment not found"
         '409':
           $ref: "#/components/responses/votingConflict"
         '500':
@@ -586,6 +686,14 @@ paths:
           description: Bad Request (check request parameters)'
         '409':
           description: "Conflict: A user with the specified handle already exists"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "A user with this handle already exists"
         '500':
           description: Internal Server Error
 components:
@@ -638,6 +746,12 @@ components:
         handle:
           type: string
           example: "rednotsus"
+        posts:
+          type: array
+          nullable: true
+          items:
+            type: string
+            format: uuid
     Comment:
       type: object
       properties:

@@ -13,7 +13,7 @@ def signup(display_name: str, handle: str, password_hash: str):
 
     manager = DatabaseManager()
     if User.get_by_handle(handle, manager):
-        return 409
+        return { "error": "A user with this handle already exists" }, 409
     else:
         user = User(display_name, handle, actual_password_hash, manager)
         return {

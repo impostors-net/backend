@@ -14,7 +14,10 @@ def list_recent(context_, count: int):
 
     handle = context_.get('user', None)
 
-    return [post.get_api_representation(User.get_by_handle(handle, manager)) for post in posts], 200
+    return [
+        post.get_api_representation(User.get_by_handle(handle, manager))
+        for post in posts
+    ], 200
 
 def fetch(context_, uuid):
     manager = DatabaseManager()
@@ -44,6 +47,6 @@ def delete(context_, uuid: str):
     if not post:
         return {"error": "Post not found"}, 404
     if post.author.id != user.id:
-        return {"error": "Forbidden"}, 403
+        return {"error": "You are not the author of this post"}, 403
     post.delete()
     return {"message": "Post deleted successfully"}, 200

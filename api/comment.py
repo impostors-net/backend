@@ -11,7 +11,11 @@ def create(context_, body: bytes, uuid: str):
 
 def fetch(uuid: str):
     manager = DatabaseManager()
-    return Comment.get_by_id(uuid, manager).get_api_representation(), 200
+    comment = Comment.get_by_id(uuid, manager)
+    if comment:
+        return comment.get_api_representation(), 200
+    else:
+        return {"error": "Comment not found"}, 404
 
 def put_vote(uuid: str, body: int, context_):
     if body == {}:
@@ -20,7 +24,7 @@ def put_vote(uuid: str, body: int, context_):
     user = User.get_by_handle(context_.get('user', None), manager)
     comment = Comment.get_by_id(uuid, manager)
     if not comment:
-        return None, 404
+        return { "error": "Comment not found" }, 404
     comment.add_vote(user, body)
     return comment.get_api_representation(), 200
 
@@ -32,6 +36,6 @@ def delete(context_, uuid: str):
     if not comment:
         return {"error": "Comment not found"}, 404
     if comment.author.id != user.id:
-        return {"error": "Forbidden"}, 403
+        return {"error": "You are not the author of this comment"}, 403
     comment.delete()
     return {"message": "Comment deleted successfully"}, 200
