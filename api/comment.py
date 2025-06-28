@@ -2,6 +2,8 @@ from database import DatabaseManager, User, Post, Comment
 
 
 def create(context_, body: bytes, uuid: str):
+    if body == {}:
+        return {"error": "Request body cannot be empty!"}, 400
     manager = DatabaseManager()
     user = context_.get('user', None)
     post = Comment(body.decode("utf-8"), Post.get_by_id(uuid, manager), User.get_by_handle(user, manager))
@@ -12,6 +14,8 @@ def fetch(uuid: str):
     return Comment.get_by_id(uuid, manager).get_api_representation(), 200
 
 def put_vote(uuid: str, body: int, context_):
+    if body == {}:
+        return {"error": "Request body cannot be empty!"}, 400
     manager = DatabaseManager()
     user = User.get_by_handle(context_.get('user', None), manager)
     comment = Comment.get_by_id(uuid, manager)

@@ -21,6 +21,8 @@ def fetch(uuid):
     return post.get_api_representation(), 200
 
 def create(context_, body: bytes):
+    if body == {}:
+        return {"error": "Request body cannot be empty!"}, 400
     manager = DatabaseManager()
     handle = context_.get('user', None)
     content = body.decode("utf-8")
