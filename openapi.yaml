@@ -7,7 +7,7 @@ info:
   termsOfService: https://impostors.space/terms
   contact:
     email: api@impostors.space
-  version: 0.0.1
+  version: 0.2.0
 servers:
   - url: https://impostors.space/api/v1
   - url: https://impostors.api.pauljako.de/api/v1
