@@ -567,6 +567,9 @@ components:
           items:
             type: string
             format: uuid
+        competitionFinished:
+          type: boolean
+          default: false
     User:
       type: object
       properties:
@@ -606,6 +609,10 @@ components:
           - 0
           - +1
           example: 0
+        isImpostor:
+          type: boolean
+          description: Whether the comment author is an impostor (always false if the competition is not yet finished)
+          default: false
   responses:
     votingConflict:
       description: Conflict

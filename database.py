@@ -208,9 +208,9 @@ class Post:
             "author": self.author.get_api_representation(),
             "createdAt": self.created_at,
             "response_type": response_type,
-            "comments": [comment.id for comment in self.get_comments()]
+            "comments": [comment.id for comment in self.get_comments()],
+            "competitionFinished": self.competition_finished(),
         }
-        #TODO: Set user roles
         return response
 
     def __init__(self, content: str, author: User):
@@ -326,6 +326,13 @@ class Post:
         roles = {user_id: UserRole(bool(role)) for user_id, role in cursor.fetchall()}
         conn.close()
         return roles
+
+    def competition_finished(self) -> bool:
+        """Check if the competition for this post has finished"""
+        # This is a placeholder implementation. You can implement your own logic.
+        # For example, you might check if the post was created more than 24 hours ago.
+        created_at = datetime.fromisoformat(self.created_at)
+        return (datetime.now() - created_at).total_seconds() > 60*60*24*3 # 3 days
     
     def delete(self):
         """Delete this post from the database"""
@@ -346,7 +353,8 @@ class Comment:
             "author": self.author.get_api_representation(),
             "post": self.post.id,
             "createdAt": self.created_at,
-            "score": sum(vote.value for vote in self.get_votes().values())
+            "score": sum(vote.value for vote in self.get_votes().values()),
+            "isImpostor": self.is_impostor(self.author),
             #TODO: Get user vote
         }
 
@@ -422,6 +430,13 @@ class Comment:
         )
         conn.commit()
         conn.close()
+
+    def is_impostor(self, user: User) -> bool:
+        """Check if the user is an impostor for this comment"""
+        if not self.post.competition_finished():
+            return False
+        roles = self.post.get_user_roles()
+        return roles.get(user.id, UserRole.INNOCENT) == UserRole.IMPOSTOR
     
     def get_votes(self) -> Dict[str, Vote]:
         """Get all votes for this comment"""
