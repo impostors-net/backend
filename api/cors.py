@@ -16,6 +16,10 @@ def user_uuid_options(uuid):
     """Handle CORS preflight for /user/{uuid}"""
     return _cors_response()
 
+def user_handle_options(handle):
+    """Handle CORS preflight for /user/{uuid}"""
+    return _cors_response()
+
 def post_comment_options(uuid):
     """Handle CORS preflight for /post/{uuid}/comment"""
     return _cors_response()

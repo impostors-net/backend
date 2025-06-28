@@ -144,7 +144,6 @@ class User:
     @classmethod
     def get_by_handle(cls, handle: str, db_manager: DatabaseManager) -> Optional['User']:
         """Retrieve user by handle"""
-        #TODO: This doesn't store the db_manager in the user object, which is needed for further operations
         conn = sqlite3.connect(db_manager.db_path)
         cursor = conn.cursor()
         cursor.execute("SELECT id, display_name, password_hash FROM users WHERE handle = ?", (str(handle),))
