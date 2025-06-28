@@ -7,11 +7,6 @@ import objects
 def put_vote():
     pass
 
-
-def get_votes():
-    pass
-
-
 def fetch(uuid, user):
     posts = main.get_posts()
 
