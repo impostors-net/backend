@@ -26,7 +26,7 @@ def delete(context_, uuid: str):
     user = User.get_by_handle(handle, manager)
     comment = Comment.get_by_id(uuid, manager)
     if not comment:
-        return {"error": "Post not found"}, 404
+        return {"error": "Comment not found"}, 404
     if comment.author.id != user.id:
         return {"error": "Forbidden"}, 403
     comment.delete()
