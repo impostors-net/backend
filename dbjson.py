@@ -60,6 +60,7 @@ def get_posts(serialized_objects: dict, users: dict[uuid.UUID, objects.User]) ->
             owner=post_owner,
             roles=post_roles,
             comments={}
+
         )
 
         for comment_uuid, comment in post["comments"].items():

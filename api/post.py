@@ -1,16 +1,19 @@
+import flask
+import random
+
 import main
 from uuid import UUID
 
 def next_post():
-    pass
+    post_uuid: UUID = random.choice(list(main.get_posts().keys()))
+    return flask.redirect("/api/v1/post/" + str(post_uuid), 302)
 
 def fetch(uuid: str, user):
-    print(uuid, user)
 
-    if UUID(uuid) not in main.posts:
+    if UUID(uuid) not in main.get_posts():
         return {}, 404
 
-    post_object = main.posts[UUID(uuid)]
+    post_object = main.get_posts()[UUID(uuid)]
 
     api_object = {
         "responseType": "impostor",

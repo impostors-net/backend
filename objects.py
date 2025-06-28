@@ -19,7 +19,7 @@ class User:
         assigned_posts = {}
 
         for post in posts.values():
-            if post.get_owner() == self:
+            if post.get_owner().uuid == self.uuid:
                 assigned_posts[post.post_uuid] = post
 
         return assigned_posts
