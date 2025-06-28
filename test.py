@@ -1,12 +1,10 @@
-import uuid
-
-from database import *
+from database import DatabaseManager, User, Post, Comment
 from os import remove, path
 
 if path.exists("test.sqlite"):
     remove("test.sqlite")
 
-manager = DatabaseManager("test.db")
+manager = DatabaseManager("test.sqlite")
 
 users = [
     User("Linus", "libewa", "password", manager),

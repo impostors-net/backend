@@ -1,4 +1,4 @@
-from database import *
+from database import DatabaseManager, User, Post, Comment
 
 
 def create(context_, body: bytes, uuid: str):
@@ -27,7 +27,7 @@ def delete(context_, uuid: str):
     comment = Comment.get_by_id(uuid, manager)
     if not comment:
         return {"error": "Post not found"}, 404
-    if comment.user.id != user.id:
+    if comment.author.id != user.id:
         return {"error": "Forbidden"}, 403
-    comment.delete(manager)
+    comment.delete()
     return {"message": "Comment deleted successfully"}, 200

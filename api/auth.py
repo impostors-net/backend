@@ -1,4 +1,4 @@
-from database import *
+from database import User, DatabaseManager
 
 def signup(display_name: str, handle: str, password_hash: str):
     manager = DatabaseManager()

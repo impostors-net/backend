@@ -1,4 +1,4 @@
-from database import *
+from database import DatabaseManager, User, Post
 
 
 def next_post():

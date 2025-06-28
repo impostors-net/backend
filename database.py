@@ -133,7 +133,7 @@ class User:
             user.id = user_id
             user.display_name = result[0]
             user.handle = result[1]
-            password_hash = result[2]
+            user.password_hash = result[2]
             user.db_manager = db_manager
             return user
         return None
@@ -361,8 +361,6 @@ class Comment:
         conn = sqlite3.connect(self.db_manager.db_path)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM comments WHERE id = ?", (self.id,))
-        conn.commit()
-        conn.close()
         
         # delete related votes
         cursor.execute("DELETE FROM comment_votes WHERE comment_id = ?", (self.id,))
