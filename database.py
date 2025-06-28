@@ -11,6 +11,7 @@ class UserRole(Enum):
 
 class Vote(Enum):
     UPVOTE = 1
+    NONE = 0
     DOWNVOTE = -1
 
 class DatabaseManager:
