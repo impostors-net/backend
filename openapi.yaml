@@ -22,6 +22,22 @@ tags:
     description: Manage users
 paths:
   /post/next:
+    options:
+      operationId: api.cors.post_next_options
+      security: []
+      responses:
+        '200':
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
     get:
       operationId: api.post.next_post
       tags:
@@ -57,8 +73,32 @@ paths:
         '500':
           description: Internal Server Error
     summary: Get the next post from your feed
-    
+
   /post/{uuid}:
+    options:
+      operationId: api.cors.post_uuid_options
+      security: []
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the post to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
     get:
       operationId: api.post.fetch
       parameters:
@@ -108,6 +148,22 @@ paths:
         '500':
           description: Internal Server Error
   /post:
+    options:
+      operationId: api.cors.post_options
+      security: []
+      responses:
+        '200':
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
     post:
       operationId: api.post.create
       tags:
@@ -134,6 +190,30 @@ paths:
         '500':
           description: Internal Server Error
   /user/{uuid}:
+    options:
+      operationId: api.cors.user_uuid_options
+      security: []
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the user to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
     get:
       operationId: api.user.fetch_by_uuid
       tags:
@@ -168,6 +248,30 @@ paths:
         '500':
           description: Internal Server Error
   /post/{uuid}/comment:
+    options:
+      operationId: api.cors.post_comment_options
+      security: []
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the post to attach the comment to
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
     post:
       operationId: api.comment.create
       tags:
@@ -202,6 +306,30 @@ paths:
         '500':
           description: Internal Server Error
   /comment/{uuid}:
+    options:
+      operationId: api.cors.comment_uuid_options
+      security: []
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the comment to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
     get:
       operationId: api.comment.fetch
       tags:
@@ -251,6 +379,30 @@ paths:
         '500':
           description: Internal Server Error
   /comment/{uuid}/vote:
+    options:
+      operationId: api.cors.comment_vote_options
+      security: []
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the comment to vote for
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
     put:
       operationId: api.comment.put_vote
       tags:
@@ -289,6 +441,22 @@ paths:
         '500':
           description: Internal Server Error
   /auth/signup:
+    options:
+      operationId: api.cors.auth_signup_options
+      security: []
+      responses:
+        '200':
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
     put:
       operationId: api.auth.signup
       tags:
