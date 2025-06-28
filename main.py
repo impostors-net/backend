@@ -34,7 +34,7 @@ def main():
 
     server.run()
 
-def get_users():
+def get_users() -> dict[uuid.UUID, objects.User]:
     with open(USERS_PICKLE_FILE, "rb") as f:
         return pickle.load(f)
 
@@ -42,7 +42,7 @@ def set_users(new_users: dict):
     with open(USERS_PICKLE_FILE, "wb") as f:
         pickle.dump(new_users, f)
 
-def get_posts():
+def get_posts() -> dict[uuid.UUID, objects.Post]:
     with open(POSTS_PICKLE_FILE, "rb") as f:
         return pickle.load(f)
 
