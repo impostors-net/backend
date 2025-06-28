@@ -13,7 +13,7 @@ class Vote(Enum):
     DOWNVOTE = -1
 
 class DatabaseManager:
-    def __init__(self, db_path: str = "app.db"):
+    def __init__(self, db_path: str = "data.db"):
         self.db_path = db_path
         self.init_db()
     
@@ -27,7 +27,8 @@ class DatabaseManager:
             CREATE TABLE IF NOT EXISTS users (
                 id TEXT PRIMARY KEY,
                 display_name TEXT NOT NULL,
-                handle TEXT UNIQUE NOT NULL
+                handle TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL
             )
         ''')
         
@@ -83,22 +84,29 @@ class DatabaseManager:
         conn.close()
 
 class User:
-    def __init__(self, display_name: str, handle: str, db_manager: DatabaseManager):
-        if User.get_by_handle(handle, db_manager):
-            raise ValueError(f"User with handle '{handle}' already exists.")
-        self.id = str(uuid.uuid4())
-        self.display_name = display_name
-        self.handle = handle
-        self.db_manager = db_manager
-        self._save()
+    def __init__(self, display_name: str, handle: str, password_hash: str, db_manager: DatabaseManager):
+        existing = User.get_by_handle(handle, db_manager)
+        if existing:
+            self.id = existing.id
+            self.display_name = existing.display_name
+            self.handle = existing.handle
+            self.password_hash = existing.password_hash
+            self.db_manager = db_manager
+        else:
+            self.id = str(uuid.uuid4())
+            self.display_name = display_name
+            self.handle = handle
+            self.password_hash = password_hash
+            self.db_manager = db_manager
+            self._save()
     
     def _save(self):
         """Save user to database"""
         conn = sqlite3.connect(self.db_manager.db_path)
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO users (id, display_name, handle) VALUES (?, ?, ?)",
-            (self.id, self.display_name, self.handle)
+            "INSERT INTO users (id, display_name, handle, password_hash) VALUES (?, ?, ?, ?)",
+            (self.id, self.display_name, self.handle, self.password_hash)
         )
         conn.commit()
         conn.close()
@@ -108,7 +116,7 @@ class User:
         """Retrieve user by ID"""
         conn = sqlite3.connect(db_manager.db_path)
         cursor = conn.cursor()
-        cursor.execute("SELECT display_name, handle FROM users WHERE id = ?", (user_id,))
+        cursor.execute("SELECT display_name, handle, password_hash FROM users WHERE id = ?", (user_id,))
         result = cursor.fetchone()
         conn.close()
         
@@ -117,6 +125,7 @@ class User:
             user.id = user_id
             user.display_name = result[0]
             user.handle = result[1]
+            password_hash = result[2]
             user.db_manager = db_manager
             return user
         return None
@@ -124,9 +133,10 @@ class User:
     @classmethod
     def get_by_handle(cls, handle: str, db_manager: DatabaseManager) -> Optional['User']:
         """Retrieve user by handle"""
+        #TODO: This doesn't store the db_manager in the user object, which is needed for further operations
         conn = sqlite3.connect(db_manager.db_path)
         cursor = conn.cursor()
-        cursor.execute("SELECT id, display_name FROM users WHERE handle = ?", (handle,))
+        cursor.execute("SELECT id, display_name, password_hash FROM users WHERE handle = ?", (handle,))
         result = cursor.fetchone()
         conn.close()
         
@@ -135,6 +145,7 @@ class User:
             user.id = result[0]
             user.display_name = result[1]
             user.handle = handle
+            user.password_hash = result[2]
             user.db_manager = db_manager
             return user
         return None
@@ -148,6 +159,16 @@ class User:
         conn.close()
         
         return [Post.get_by_id(post_id, self.db_manager) for post_id in post_ids]
+
+    def get_comments(self) -> List['Comment']:
+        """Get all comments by this user"""
+        conn = sqlite3.connect(self.db_manager.db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM comments WHERE author_id = ?", (self.id,))
+        comment_ids = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        
+        return [Comment.get_by_id(comment_id, self.db_manager) for comment_id in comment_ids]
 
 class Post:
     def __init__(self, content: str, author: User):
@@ -197,6 +218,11 @@ class Post:
         conn.close()
         
         return [Comment.get_by_id(comment_id, self.db_manager) for comment_id in comment_ids]
+
+    def add_comment(self, content: str, author: User) -> "Comment":
+        """Add a comment to this post"""
+        comment = Comment(content, self, author)
+        return comment
     
     def set_user_role(self, user: User, role: UserRole):
         """Set role for a user in this post"""
