@@ -144,10 +144,9 @@ class User:
         #TODO: This doesn't store the db_manager in the user object, which is needed for further operations
         conn = sqlite3.connect(db_manager.db_path)
         cursor = conn.cursor()
-        cursor.execute("SELECT id, display_name, password_hash FROM users WHERE handle = ?", (handle,))
+        cursor.execute("SELECT id, display_name, password_hash FROM users WHERE handle = ?", (str(handle),))
         result = cursor.fetchone()
         conn.close()
-        
         if result:
             user = cls.__new__(cls)
             user.id = result[0]
@@ -156,7 +155,8 @@ class User:
             user.password_hash = result[2]
             user.db_manager = db_manager
             return user
-        return None
+        else:
+            return None
     
     def get_posts(self) -> List['Post']:
         """Get all posts by this user"""

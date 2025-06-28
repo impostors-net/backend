@@ -6,7 +6,7 @@ def next_post():
     post = Post.get_random(manager)
     if not post:
         return {"error": "No posts available"}, 404
-    return { "uuid": post.id }, 302, { "Location": f"/post/{post.id}" }
+    return { "uuid": post.id }, 302, { "Location": f"/api/v1/post/{post.id}" }
 
 def fetch(uuid):
     manager = DatabaseManager()
@@ -15,7 +15,10 @@ def fetch(uuid):
         return {"error": "Post not found"}, 404
     return post.get_api_representation(), 200
 
-def create(context_, body: str):
+def create(context_, body: bytes):
     manager = DatabaseManager()
-    user = context_.get('user', None)
-    post = Post(body, User.get_by_handle(context_, manager))
+    handle = context_.get('user', None)
+    content = body.decode("utf-8")
+    user = User.get_by_handle(handle, manager)
+    post = Post(content, user)
+    return post.get_api_representation(), 200
