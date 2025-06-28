@@ -10,6 +10,7 @@ info:
   version: 0.0.1
 servers:
   - url: https://impostors.space/api/v1
+  - url: https://impostors.api.pauljako.de/api/v1
 tags:
   - name: user
     description: Get information about users.
@@ -26,6 +27,12 @@ paths:
       tags:
       - post
       responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
         '401':
           description: Unauthorized
         '302':
@@ -38,10 +45,6 @@ paths:
                 type: string
                 format: uri
           content:
-            text/plain:
-              schema:
-                type: string
-                format: uuid
             application/json:
               schema:
                 type: object
@@ -49,6 +52,8 @@ paths:
                   uuid:
                     type: string
                     format: uuid
+        '404':
+          description: "Not Found: No posts available"
         '500':
           description: Internal Server Error
     summary: Get the next post from your feed
@@ -79,9 +84,32 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+    delete:
+      operationId: api.post.delete
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the post to delete
+        required: true
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - post
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
   /post:
     post:
-      operationId: api.post.post
+      operationId: api.post.create
       tags:
       - post
       requestBody:
@@ -199,6 +227,29 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+    delete:
+      operationId: api.comment.delete
+      tags:
+      - comment
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the comment to delete
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
   /comment/{uuid}/vote:
     put:
       operationId: api.comment.put_vote
@@ -213,14 +264,15 @@ paths:
           type: string
           format: uuid
       requestBody:
-        description: The vote action, either "upvote" or "downvote"
+        description: The vote action, either -1, 0 or 1
         content:
           application/json:
             schema:
-              type: string
+              type: integer
               enum:
-              - upvote
-              - downvote
+              - -1
+              - 0
+              - +1
       responses:
         '200':
           description: Success
@@ -244,19 +296,19 @@ paths:
       security: []
       parameters:
       - name: displayName
-        in: header
+        in: query
         description: The display name of the user to create
         required: true
         schema:
           type: string
       - name: handle
-        in: header
+        in: query
         description: The unique handle of the new user
         required: true
         schema:
           type: string
       - name: passwordHash
-        in: header
+        in: query
         description: The SHA256 password hash of the user to create
         required: true
         schema:
@@ -278,7 +330,7 @@ components:
     basicAuth:
       type: http
       scheme: basic
-      x-basicInfoFunc: api.auth.basic_auth
+      x-basicInfoFunc: "auth.basic_auth"
   schemas:
     Post:
       type: object
@@ -297,8 +349,11 @@ components:
           format: markdown
           nullable: true
           example: null
-        user:
+        author:
           $ref: "#/components/schemas/User"
+        createdAt:
+          type: string
+          format: date-time
         comments:
           type: array
           nullable: true
@@ -329,8 +384,11 @@ components:
         post:
           type: string
           format: uuid
-        user:
+        author:
           $ref: "#/components/schemas/User"
+        createdAt:
+          type: string
+          format: date-time
         score:
           type: integer
           example: 12

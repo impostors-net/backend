@@ -9,7 +9,7 @@ port = DEFAULT_PORT
 
 def run():
     app = connexion.FlaskApp(__name__)
-    app.add_api("./openapi.yaml")
+    app.add_api("./openapi.yaml", pythonic_params=True)
     flask_cors.CORS(app.app)
     app.run(host=host, port=port)
 

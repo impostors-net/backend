@@ -1,37 +1,36 @@
-import flask
-import random
-
-import main
-from uuid import UUID
-
-import objects
+from database import DatabaseManager, User, Post
 
 
 def next_post():
-    post_uuid: UUID = random.choice(list(main.get_posts().keys()))
-    return flask.redirect("/api/v1/post/" + str(post_uuid), 302)
+    manager = DatabaseManager()
+    post = Post.get_random(manager)
+    if not post:
+        return {"error": "No posts available"}, 404
+    return { "uuid": post.id }, 302, { "Location": f"/api/v1/post/{post.id}" }
 
-def fetch(uuid: str, user):
+def fetch(uuid):
+    manager = DatabaseManager()
+    post = Post.get_by_id(uuid, manager)
+    if not post:
+        return {"error": "Post not found"}, 404
+    return post.get_api_representation(), 200
 
-    if UUID(uuid) not in main.get_posts():
-        return {}, 404
+def create(context_, body: bytes):
+    manager = DatabaseManager()
+    handle = context_.get('user', None)
+    content = body.decode("utf-8")
+    user = User.get_by_handle(handle, manager)
+    post = Post(content, user)
+    return post.get_api_representation(), 200
 
-    post_object: objects.Post = main.get_posts()[UUID(uuid)]
-
-    api_object = {
-        "responseType": "impostor",
-        "uuid": post_object.post_uuid,
-        "content": post_object.get_content(),
-        "user": {
-            "uuid": post_object.get_owner().uuid,
-            "displayName": post_object.get_owner().get_name(),
-            "handle": post_object.get_owner().get_name()
-        },
-        "comments": list(post_object.get_comments().keys())
-    }
-
-    return api_object, 200
-
-def post():
-    pass
-
+def delete(context_, uuid: str):
+    manager = DatabaseManager()
+    handle = context_.get('user', None)
+    user = User.get_by_handle(handle, manager)
+    post = Post.get_by_id(uuid, manager)
+    if not post:
+        return {"error": "Post not found"}, 404
+    if post.author.id != user.id:
+        return {"error": "Forbidden"}, 403
+    post.delete()
+    return {"message": "Post deleted successfully"}, 200
