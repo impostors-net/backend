@@ -3,8 +3,8 @@
 def next_post():
     pass
 
-def fetch(uuid: str):
-    print(uuid)
+def fetch(uuid: str, user):
+    print(uuid, user)
 
 def post():
     pass

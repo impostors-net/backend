@@ -1,20 +1,22 @@
 import uuid
 
-import database
+import dbjson
 import objects
 
 users: dict[uuid.UUID, objects.User] = {}
 posts: dict[uuid.UUID, objects.Post] = {}
+serialized_objects: dict = {}
 
 def main():
-    global users, posts
+    global users, posts, serialized_objects
 
-    connection = database.start()
-    database.main(connection)
+    serialized_objects = dbjson.parse_file()
 
-    users = objects.users_from_database(connection)
+    users = dbjson.get_users(serialized_objects)
 
-    connection.close()
+    print(users)
+
+    dbjson.save_file(serialized_objects)
 
 if __name__ == "__main__":
     main()
