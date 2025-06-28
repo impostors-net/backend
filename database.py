@@ -1,3 +1,4 @@
+import hashlib
 import sqlite3
 import uuid
 from datetime import datetime
@@ -172,8 +173,15 @@ class User:
 
     def check_password(self, password: str) -> bool:
         """Check if the provided password matches the stored hash"""
-        # In a real application, you should use a secure hashing algorithm like bcrypt
-        return self.password_hash == password
+        password_bytes = password.encode('utf-8')
+
+        # Use SHA-256 hash function to create a hash object
+        hash_object = hashlib.sha256(password_bytes)
+
+        # Get the hexadecimal representation of the hash
+        other_password_hash = hash_object.hexdigest()
+
+        return self.password_hash == other_password_hash
     
     def get_comments(self) -> List['Comment']:
         """Get all comments by this user"""
