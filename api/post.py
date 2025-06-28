@@ -22,3 +22,6 @@ def create(context_, body: bytes):
     user = User.get_by_handle(handle, manager)
     post = Post(content, user)
     return post.get_api_representation(), 200
+
+def delete():
+    pass

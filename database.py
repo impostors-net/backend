@@ -334,13 +334,13 @@ class Comment:
             return comment
         return None
     
-    def add_vote(self, user: User, vote: Vote):
+    def add_vote(self, user: User, vote: int):
         """Add or update a vote for this comment"""
         conn = sqlite3.connect(self.db_manager.db_path)
         cursor = conn.cursor()
         cursor.execute(
             "INSERT OR REPLACE INTO comment_votes (comment_id, user_id, vote) VALUES (?, ?, ?)",
-            (self.id, user.id, vote.value)
+            (self.id, user.id, vote)
         )
         conn.commit()
         conn.close()
