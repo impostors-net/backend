@@ -1,15 +1,9 @@
 import main
 
-
-def initialize():
-    main.initialize()
-
-
 def signup():
     pass
 
 def basic_auth(username: str, password: str):
-    initialize()
     print(username, password)
 
     print(main.get_users())
