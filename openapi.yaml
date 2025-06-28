@@ -21,6 +21,34 @@ tags:
   - name: auth
     description: Manage users
 paths:
+  /post/list/recent:
+    get:
+      operationId: api.post.list_recent
+      tags:
+      - post
+      parameters:
+      - name: count
+        in: query
+        description: "The maximum number of posts to return. NOTE: If there are less posts available than the specified count, all available posts will be returned. The remaining elements will NOT be filled with null values."
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
   /post/random:
     options:
       operationId: api.cors.post_next_options

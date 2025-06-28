@@ -247,6 +247,17 @@ class Post:
         if result:
             return cls.get_by_id(result[0], db_manager)
         return None
+
+    @classmethod
+    def get_recent(cls, limit: int, db_manager: DatabaseManager) -> List['Post']:
+        """Retrieve a list of posts with a limit"""
+        conn = sqlite3.connect(db_manager.db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM posts ORDER BY created_at DESC LIMIT ?", (limit,))
+        post_ids = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        
+        return [cls.get_by_id(post_id, db_manager) for post_id in post_ids if post_id is not None]
     
     def get_comments(self) -> List['Comment']:
         """Get all comments for this post"""

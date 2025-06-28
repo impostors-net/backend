@@ -8,6 +8,11 @@ def random():
         return {"error": "No posts available"}, 404
     return { "uuid": post.id }, 302, { "Location": f"/api/v1/post/{post.id}" }
 
+def list_recent(count: int):
+    manager = DatabaseManager()
+    posts = Post.get_recent(count, manager)
+    return [post.get_api_representation() for post in posts], 200
+
 def fetch(uuid):
     manager = DatabaseManager()
     post = Post.get_by_id(uuid, manager)
