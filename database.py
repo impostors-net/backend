@@ -281,6 +281,17 @@ class Post:
         roles = {user_id: UserRole(bool(role)) for user_id, role in cursor.fetchall()}
         conn.close()
         return roles
+    
+    def delete(self):
+        """Delete this post from the database"""
+        conn = sqlite3.connect(self.db_manager.db_path)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM posts WHERE id = ?", (self.id,))
+        conn.commit()
+        conn.close()
+        
+        # delete related comments and votes
+        Comment.delete_by_post_id(self.id, self.db_manager)
 
 class Comment:
     def get_api_representation(self) -> Dict[str, str]:
@@ -334,6 +345,30 @@ class Comment:
             return comment
         return None
     
+    def delete_by_post_id(post_id: str, db_manager: DatabaseManager):
+        """Delete all comments for a specific post"""
+        conn = sqlite3.connect(db_manager.db_path)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM comments WHERE post_id = ?", (post_id,))
+        
+        # delete related votes
+        cursor.execute("DELETE FROM comment_votes WHERE comment_id IN (SELECT id FROM comments WHERE post_id = ?)", (post_id,))
+        conn.commit()
+        conn.close()
+    
+    def delete(self):
+        """Delete this comment from the database"""
+        conn = sqlite3.connect(self.db_manager.db_path)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM comments WHERE id = ?", (self.id,))
+        conn.commit()
+        conn.close()
+        
+        # delete related votes
+        cursor.execute("DELETE FROM comment_votes WHERE comment_id = ?", (self.id,))
+        conn.commit()
+        conn.close()
+
     def add_vote(self, user: User, vote: int):
         """Add or update a vote for this comment"""
         conn = sqlite3.connect(self.db_manager.db_path)

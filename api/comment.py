@@ -20,5 +20,14 @@ def put_vote(uuid: str, body: int, context_):
     comment.add_vote(user, body)
     return comment.get_api_representation(), 200
 
-def delete():
-    pass
+def delete(context_, uuid: str):
+    manager = DatabaseManager()
+    handle = context_.get('user', None)
+    user = User.get_by_handle(handle, manager)
+    comment = Comment.get_by_id(uuid, manager)
+    if not comment:
+        return {"error": "Post not found"}, 404
+    if comment.user.id != user.id:
+        return {"error": "Forbidden"}, 403
+    comment.delete(manager)
+    return {"message": "Comment deleted successfully"}, 200

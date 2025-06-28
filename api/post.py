@@ -23,5 +23,14 @@ def create(context_, body: bytes):
     post = Post(content, user)
     return post.get_api_representation(), 200
 
-def delete():
-    pass
+def delete(context_, uuid: str):
+    manager = DatabaseManager()
+    handle = context_.get('user', None)
+    user = User.get_by_handle(handle, manager)
+    post = Post.get_by_id(uuid, manager)
+    if not post:
+        return {"error": "Post not found"}, 404
+    if post.author.id != user.id:
+        return {"error": "Forbidden"}, 403
+    post.delete()
+    return {"message": "Post deleted successfully"}, 200

@@ -10,6 +10,7 @@ info:
   version: 0.0.1
 servers:
   - url: https://impostors.space/api/v1
+  - url: https://impostors.api.pauljako.de/api/v1
 tags:
   - name: user
     description: Get information about users.
@@ -26,6 +27,12 @@ paths:
       tags:
       - post
       responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
         '401':
           description: Unauthorized
         '302':
