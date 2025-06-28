@@ -81,7 +81,7 @@ paths:
           description: Internal Server Error
   /post:
     post:
-      operationId: api.post.post
+      operationId: api.post.create
       tags:
       - post
       requestBody:

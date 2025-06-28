@@ -21,9 +21,6 @@
         devShell = pkgs.mkShell {
           buildInputs = [
             pkgs.python3
-            pkgs.python3Packages.flask
-            pkgs.python3Packages.connexion
-            pkgs.python3Packages.uvicorn
           ];
         };
       }
