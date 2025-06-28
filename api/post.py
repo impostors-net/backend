@@ -8,17 +8,23 @@ def random():
         return {"error": "No posts available"}, 404
     return { "uuid": post.id }, 302, { "Location": f"/api/v1/post/{post.id}" }
 
-def list_recent(count: int):
+def list_recent(context_, count: int):
     manager = DatabaseManager()
     posts = Post.get_recent(count, manager)
-    return [post.get_api_representation() for post in posts], 200
 
-def fetch(uuid):
+    handle = context_.get('user', None)
+
+    return [post.get_api_representation(User.get_by_handle(handle, manager)) for post in posts], 200
+
+def fetch(context_, uuid):
     manager = DatabaseManager()
     post = Post.get_by_id(uuid, manager)
     if not post:
         return {"error": "Post not found"}, 404
-    return post.get_api_representation(), 200
+
+    handle = context_.get('user', None)
+
+    return post.get_api_representation(User.get_by_handle(handle, manager)), 200
 
 def create(context_, body: bytes):
     if body == {}:
@@ -28,7 +34,7 @@ def create(context_, body: bytes):
     content = body.decode("utf-8")
     user = User.get_by_handle(handle, manager)
     post = Post(content, user)
-    return post.get_api_representation(), 200
+    return post.get_api_representation(user), 200
 
 def delete(context_, uuid: str):
     manager = DatabaseManager()

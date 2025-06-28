@@ -1,4 +1,5 @@
 import hashlib
+import random
 import sqlite3
 import uuid
 from datetime import datetime
@@ -194,12 +195,19 @@ class User:
         return [Comment.get_by_id(comment_id, self.db_manager) for comment_id in comment_ids]
 
 class Post:
-    def get_api_representation(self) -> Dict[str, str]:
+    def get_api_representation(self, user: User) -> Dict[str, str]:
+
+        if user.id == self.author.id:
+            response_type = "author"
+        else:
+            response_type = self.get_response_type(user)
+
         response = {
             "uuid": self.id,
             "content": self.content,
             "author": self.author.get_api_representation(),
             "createdAt": self.created_at,
+            "response_type": response_type,
             "comments": [comment.id for comment in self.get_comments()]
         }
         #TODO: Set user roles
@@ -212,6 +220,23 @@ class Post:
         self.author = author
         self.db_manager = author.db_manager
         self._save()
+
+    def get_response_type(self, user: User) -> str:
+        existing_roles = self.get_user_roles()
+
+        if user.id in existing_roles:
+            is_impostor = existing_roles[user.id].value
+
+        else:
+            is_impostor = random.random() < 0.1
+            role = UserRole(bool(is_impostor))
+            self.set_user_role(user, role)
+
+        if is_impostor:
+            role_string = "impostor"
+        else:
+            role_string = "innocent"
+        return role_string
     
     def _save(self):
         """Save post to database"""
