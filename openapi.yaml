@@ -278,7 +278,7 @@ components:
     basicAuth:
       type: http
       scheme: basic
-      x-basicInfoFunc: app.basic_auth
+      x-basicInfoFunc: api.auth.basic_auth
   schemas:
     Post:
       type: object
