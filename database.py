@@ -57,19 +57,19 @@ def get_posts(connection: sqlite3.Connection) -> list[Post]:
     rows = cursor.fetchall()
     return [
         Post(
-            uuid=UUID(row[0]),
+            post_uuid=uuid.UUID(row[0]),
             content=row[1],
-            owner=getUser(connection, UUID(row[2])),
+            owner=get_user(connection, uuid.UUID(row[2])),
             comments=row[3].split(",") if row[3] else [],
             roles={}
         )
         for row in rows
     ]
 
-def getUser(connection: sqlite3.Connection, user_uuid: UUID) -> User | None:
+def get_user(connection: sqlite3.Connection, user_uuid: uuid.UUID) -> User | None:
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM users WHERE uuid = ?", (str(user_uuid),))
     row = cursor.fetchone()
     if row:
-        return User(uuid=UUID(row[0]), name=row[1], password_hash=row[2])
+        return User(user_uuid=uuid.UUID(row[0]), user_name=row[1], password_hash=row[2])
     return None
