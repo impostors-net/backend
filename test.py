@@ -1,30 +1,24 @@
 import uuid
 
-import objects
+from database import *
+from os import remove, path
 
-user_list = [objects.User(uuid.uuid4(), "linus", "fsdpojfkso"), objects.User(uuid.uuid4(), "pauljako", "fsdpojfkso"),
-             objects.User(uuid.uuid4(), "kleefuchs", "fsdpojfkso"), ]
+if path.exists("test.db"):
+    remove("test.db")
 
-users: dict[uuid.UUID, objects.User] = {}
-posts: dict[uuid.UUID, objects.Post] = {}
+manager = DatabaseManager("test.db")
 
-post_list = [objects.Post(uuid.uuid4(), "Fancy Post by linus", user_list[0], {}, {}),
-             objects.Post(uuid.uuid4(), "Fancy Post by paul", user_list[1], {}, {})]
+users = [
+    User("Linus", "libewa", "password", manager),
+    User("Paul", "pauljako", "password", manager),
+    User("Kleefuchs", "kleefuchs", "password", manager),
+    User("Red", "kindasus", "password", manager),
+]
 
-for user_obj in user_list:
-    users[user_obj.uuid] = user_obj
+post = Post("According to all known laws of aviation, there is no way a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway because bees don't care what humans think is impossible.", users[0])
+post.add_comment("I don't think this is true, bees are actually quite aerodynamic.", users[1])
 
-for post_obj in post_list:
-    posts[post_obj.post_uuid] = post_obj
-
-post_list[0].add_comment("Comment by paul", user_list[1], {})
-post_list[0].add_comment("Comment by kleefuchs", user_list[2], {})
-
-for post in user_list[0].get_assigned_posts(posts).values():
-    print(post)
-    for comment in post.get_comments().values():
-        print(comment)
-
-
-for comment in user_list[2].get_assigned_comments(post_list[0].get_comments()).values():
-    print(comment)
+for post in users[0].get_posts():
+    print(post.content)
+    for comment in post.get_comments():
+        print(comment.content)
