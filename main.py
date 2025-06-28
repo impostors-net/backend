@@ -2,7 +2,6 @@ import uuid
 
 import database
 import objects
-import server
 
 users: dict[uuid.UUID, objects.User] = {}
 posts: dict[uuid.UUID, objects.Post] = {}

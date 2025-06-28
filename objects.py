@@ -54,9 +54,9 @@ class Post:
     def get_comments(self):
         return self.comments
 
-    def add_comment(self, content: str, writer: User):
+    def add_comment(self, content: str, writer: User, votes: dict[User, int]):
         comment_uuid = uuid.uuid4()
-        self.comments[comment_uuid] = Comment(comment_uuid, content, writer, self)
+        self.comments[comment_uuid] = Comment(comment_uuid, content, votes, writer, self)
 
     def get_roles(self):
         return self.roles
@@ -68,11 +68,12 @@ class Post:
         return self.content
 
 class Comment:
-    def __init__(self, comment_uuid: uuid.UUID, content: str, owner: User, post: Post):
+    def __init__(self, comment_uuid: uuid.UUID, content: str, votes: dict[User, int], owner: User, post: Post):
         self.comment_uuid = comment_uuid
         self.content = content
         self.post = post
         self.owner = owner
+        self.votes = votes
 
     def get_post(self):
         return self.post
@@ -82,6 +83,22 @@ class Comment:
 
     def get_content(self):
         return self.content
+
+    def get_votes(self) -> dict[User, int]:
+        return self.votes
+
+    def get_score(self) -> int:
+        score: int = 0
+
+        for vote in self.votes.values():
+            score += vote
+
+        return score
+
+    def set_score(self, user: User, score: int):
+        self.votes[user] = score
+
+
 
     def __str__(self):
         return self.content
