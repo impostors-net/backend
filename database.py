@@ -8,6 +8,7 @@ class UserRole(Enum):
     IMPOSTOR = True
     INNOCENT = False
 
+
 class Vote(Enum):
     UPVOTE = 1
     DOWNVOTE = -1
@@ -84,6 +85,13 @@ class DatabaseManager:
         conn.close()
 
 class User:
+    def get_api_representation(self) -> Dict[str, str]:
+        return {
+            "uuid": self.id,
+            "displayName": self.display_name,
+            "handle": self.handle
+        }
+
     def __init__(self, display_name: str, handle: str, password_hash: str, db_manager: DatabaseManager):
         existing = User.get_by_handle(handle, db_manager)
         if existing:
@@ -160,6 +168,12 @@ class User:
         
         return [Post.get_by_id(post_id, self.db_manager) for post_id in post_ids]
 
+
+    def check_password(self, password: str) -> bool:
+        """Check if the provided password matches the stored hash"""
+        # In a real application, you should use a secure hashing algorithm like bcrypt
+        return self.password_hash == password
+    
     def get_comments(self) -> List['Comment']:
         """Get all comments by this user"""
         conn = sqlite3.connect(self.db_manager.db_path)
@@ -171,6 +185,17 @@ class User:
         return [Comment.get_by_id(comment_id, self.db_manager) for comment_id in comment_ids]
 
 class Post:
+    def get_api_representation(self) -> Dict[str, str]:
+        response = {
+            "uuid": self.id,
+            "content": self.content,
+            "author": self.author.get_api_representation(),
+            "createdAt": self.created_at,
+            "comments": [comment.id for comment in self.get_comments()]
+        }
+        #TODO: Set user roles
+        return response
+
     def __init__(self, content: str, author: User):
         self.id = str(uuid.uuid4())
         self.content = content
@@ -209,6 +234,19 @@ class Post:
             return post
         return None
     
+    @classmethod
+    def get_random(cls, db_manager: DatabaseManager) -> Optional['Post']:
+        """Retrieve a random post"""
+        conn = sqlite3.connect(db_manager.db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM posts ORDER BY RANDOM() LIMIT 1")
+        result = cursor.fetchone()
+        conn.close()
+        
+        if result:
+            return cls.get_by_id(result[0], db_manager)
+        return None
+    
     def get_comments(self) -> List['Comment']:
         """Get all comments for this post"""
         conn = sqlite3.connect(self.db_manager.db_path)
@@ -245,6 +283,17 @@ class Post:
         return roles
 
 class Comment:
+    def get_api_representation(self) -> Dict[str, str]:
+        return {
+            "uuid": self.id,
+            "content": self.content,
+            "author": self.author.get_api_representation(),
+            "post": self.post.id,
+            "createdAt": self.created_at,
+            "score": sum(vote.value for vote in self.get_votes().values())
+            #TODO: Get user vote
+        }
+
     def __init__(self, content: str, post: Post, author: User):
         self.id = str(uuid.uuid4())
         self.content = content

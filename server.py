@@ -7,7 +7,7 @@ host = DEFAULT_HOST
 port = DEFAULT_PORT
 
 app = connexion.App(__name__)
-app.add_api("./openapi.yaml")
+app.add_api("./openapi.yaml", pythonic_params=True)
 
 
 def run():

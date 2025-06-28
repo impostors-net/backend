@@ -38,10 +38,6 @@ paths:
                 type: string
                 format: uri
           content:
-            text/plain:
-              schema:
-                type: string
-                format: uuid
             application/json:
               schema:
                 type: object
@@ -49,6 +45,8 @@ paths:
                   uuid:
                     type: string
                     format: uuid
+        '404':
+          description: "Not Found: No posts available"
         '500':
           description: Internal Server Error
     summary: Get the next post from your feed
@@ -244,19 +242,19 @@ paths:
       security: []
       parameters:
       - name: displayName
-        in: header
+        in: query
         description: The display name of the user to create
         required: true
         schema:
           type: string
       - name: handle
-        in: header
+        in: query
         description: The unique handle of the new user
         required: true
         schema:
           type: string
       - name: passwordHash
-        in: header
+        in: query
         description: The SHA256 password hash of the user to create
         required: true
         schema:
@@ -278,6 +276,7 @@ components:
     basicAuth:
       type: http
       scheme: basic
+      x-basicInfoFunc: "auth.basic_auth"
   schemas:
     Post:
       type: object
@@ -296,8 +295,11 @@ components:
           format: markdown
           nullable: true
           example: null
-        user:
+        author:
           $ref: "#/components/schemas/User"
+        createdAt:
+          type: string
+          format: date-time
         comments:
           type: array
           nullable: true
@@ -328,8 +330,11 @@ components:
         post:
           type: string
           format: uuid
-        user:
+        author:
           $ref: "#/components/schemas/User"
+        createdAt:
+          type: string
+          format: date-time
         score:
           type: integer
           example: 12

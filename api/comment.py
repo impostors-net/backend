@@ -1,8 +1,21 @@
-def create():
-    pass
+from database import *
 
-def fetch():
-    pass
 
-def put_vote():
-    pass
+def create(context_, body: str, uuid: str):
+    manager = DatabaseManager()
+    user = context_.get('user', None)
+    post = Comment(body, Post.get_by_id(uuid, manager), User.get_by_id(user, manager))
+    return post.get_api_representation(), 200
+
+def fetch(uuid: str):
+    manager = DatabaseManager()
+    return Comment.get_by_id(uuid, manager).get_api_representation(), 200
+
+def put_vote(uuid: str, body: str, context_):
+    manager = DatabaseManager()
+    user = User.get_by_id(context_.get('user', None), manager)
+    comment = Comment.get_by_id(uuid, manager)
+    if not comment:
+        return None, 404
+    comment.add_vote(user, body)
+    return comment.get_api_representation(), 200
