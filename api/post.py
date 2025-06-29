@@ -29,7 +29,7 @@ def fetch(context_, uuid):
 
     handle = context_.get('user', None)
 
-    return post.get_api_representation(User.get_by_handle(handle, manager)), 200, { "Content-Type": "text/html" }
+    return post.get_api_representation(User.get_by_handle(handle, manager)), 200
 
 def fetch_html(context_, uuid):
     manager = DatabaseManager()
@@ -39,7 +39,7 @@ def fetch_html(context_, uuid):
 
     handle = context_.get('user', None)
 
-    return gfm_to_html(post.content), 200
+    return gfm_to_html(post.content), 200, { "Content-Type": "text/html" }
 
 
 def create(context_, body: bytes):
