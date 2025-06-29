@@ -211,6 +211,14 @@ paths:
     options:
       operationId: api.cors.post_html_options
       security: []
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the post to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: CORS preflight response
@@ -608,6 +616,14 @@ paths:
     options:
       operationId: api.cors.comment_html_options
       security: []
+      parameters:
+      - name: uuid
+        in: path
+        description: The UUID of the comment to fetch
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: CORS preflight response

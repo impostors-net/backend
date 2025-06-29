@@ -36,10 +36,10 @@ def auth_signup_options():
     """Handle CORS preflight for /auth/signup"""
     return _cors_response()
 
-def post_html_options():
+def post_html_options(uuid):
     return _cors_response()
 
-def comment_html_options():
+def comment_html_options(uuid):
     return _cors_response()
 
 def _cors_response():
