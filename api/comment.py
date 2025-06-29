@@ -18,7 +18,7 @@ def fetch_html(context_, uuid):
 
     handle = context_.get('user', None)
 
-    return gfm_to_html(post.content), 200
+    return gfm_to_html(post.content), 200, { "Content-Type": "text/html" }
 
 def fetch(uuid: str):
     manager = DatabaseManager()
