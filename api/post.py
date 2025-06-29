@@ -25,7 +25,7 @@ def fetch(context_, uuid):
     manager = DatabaseManager()
     post = Post.get_by_id(uuid, manager)
     if not post:
-        return {"error": "Post not found"}, 404, { "Content-Type": "text/html" }
+        return {"error": "Post not found"}, 404
 
     handle = context_.get('user', None)
 
