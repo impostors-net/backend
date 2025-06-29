@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
+from pycmarkgfm import gfm_to_html
 
 class UserRole(Enum):
     IMPOSTOR = True
@@ -199,13 +200,21 @@ class User:
         return [Comment.get_by_id(comment_id, self.db_manager) for comment_id in comment_ids]
 
 class Post:
-    def get_api_representation(self, user: User) -> Dict[str, str]:
+    def get_api_representation(self, user: User, html: bool = False) -> Dict[str, str]:
 
         response_type = self.get_response_type(user)
 
+        if html:
+            content = gfm_to_html(self.content)
+        else:
+            content = self.content
+
+        if response_type == ResponseType.IMPOSTOR:
+            content = "You are the impostor!"
+
         response = {
             "uuid": self.id,
-            "content": "You are the impostor!" if response_type == ResponseType.IMPOSTOR else self.content,
+            "content": content,
             "author": self.author.get_api_representation(),
             "createdAt": self.created_at,
             "response_type": response_type.value,

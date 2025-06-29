@@ -1,4 +1,6 @@
+from pycmarkgfm import gfm_to_html
 from database import DatabaseManager, User, Post
+from flask import request
 
 
 def random():
@@ -19,7 +21,7 @@ def list_recent(context_, count: int):
         for post in posts
     ], 200
 
-def fetch(context_, uuid):
+def fetch(context_, uuid)
     manager = DatabaseManager()
     post = Post.get_by_id(uuid, manager)
     if not post:
@@ -28,6 +30,17 @@ def fetch(context_, uuid):
     handle = context_.get('user', None)
 
     return post.get_api_representation(User.get_by_handle(handle, manager)), 200
+
+def fetch_html(context_, uuid):
+    manager = DatabaseManager()
+    post = Post.get_by_id(uuid, manager)
+    if not post:
+        return {"error": "Post not found"}, 404
+
+    handle = context_.get('user', None)
+
+    return gfm_to_html(post.content), 200
+
 
 def create(context_, body: bytes):
     if body == {}:
