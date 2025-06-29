@@ -14,7 +14,7 @@ def fetch_html(context_, uuid):
     manager = DatabaseManager()
     post = Comment.get_by_id(uuid, manager)
     if not post:
-        return {"error": "Comment not found"}, 404
+        return {"error": "Comment not found"}, 404, { "Content-Type": "text/html" }
 
     handle = context_.get('user', None)
 
