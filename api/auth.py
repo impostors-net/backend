@@ -29,4 +29,4 @@ def signup(display_name: str, handle: str, password_hash: str):
 
 
 def is_valid_handle(handle: str):
-    return re.sub(pattern, "match", handle) == "match"
+    return re.match(pattern, handle)

@@ -21,7 +21,7 @@ def list_recent(context_, count: int):
         for post in posts
     ], 200
 
-def fetch(context_, uuid)
+def fetch(context_, uuid):
     manager = DatabaseManager()
     post = Post.get_by_id(uuid, manager)
     if not post:

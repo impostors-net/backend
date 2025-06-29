@@ -788,6 +788,8 @@ paths:
         required: true
         schema:
           type: string
+          minLength: 3
+          pattern: '^\w{3,}$'
       - name: passwordHash
         in: query
         description: The SHA256 password hash of the user to create
