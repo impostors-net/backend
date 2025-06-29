@@ -327,9 +327,9 @@ paths:
       operationId: api.cors.user_handle_options
       security: []
       parameters:
-      - name: uuid
+      - name: handle
         in: path
-        description: The handle of the user to fetch
+        description: The uuid of the user to fetch
         required: true
         schema:
           type: string
